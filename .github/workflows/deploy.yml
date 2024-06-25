@@ -1,0 +1,26 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # Change this to the branch you want to trigger the action
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install SSH client
+      run: sudo apt-get install -y openssh-client
+
+    - name: Copy files via SSH
+      env:
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+        SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+      run: |
+        sudo apt-get install sshpass
+        sshpass -p $SERVER_PASSWORD scp -o StrictHostKeyChecking=no -r ./* $SERVER_USERNAME@$SERVER_IP:/home/gsosdemo/test
